@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デジタル時計 (JST)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* ===== カスタマイズ可能な背景 ===== */
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            /* background: #000000; シンプル黒背景の場合はこちら */
+            /* background: #f5f5f5; ライト背景の場合はこちら */
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+        }
+
+        .clock-container {
+            padding: 40px 60px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clock {
+            /* ===== カスタマイズ可能なフォント ===== */
+            font-size: 120px;
+            font-weight: bold;
+            color: #00ff00;
+            /* color: #ffffff; 白色の場合 */
+            /* color: #ff6b6b; 赤色の場合 */
+            
+            font-family: 'Courier New', 'Courier', monospace;
+            letter-spacing: 8px;
+            text-align: center;
+            
+            /* グロー効果（オプション） */
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+            /* text-shadow: 0 0 10px #ffffff; 白色グロー */
+        }
+
+        .timezone-label {
+            margin-top: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        @media (max-width: 768px) {
+            .clock {
+                font-size: 80px;
+                letter-spacing: 5px;
+            }
+            
+            .clock-container {
+                padding: 30px 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .clock {
+                font-size: 60px;
+                letter-spacing: 3px;
+            }
+            
+            .clock-container {
+                padding: 20px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="timezone-label">JST (Japan Standard Time)</div>
+    </div>
+
+    <script>
+        function updateClock() {
+            // JST（日本標準時）を取得
+            const now = new Date();
+            const jstTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
+            
+            const hours = String(jstTime.getHours()).padStart(2, '0');
+            const minutes = String(jstTime.getMinutes()).padStart(2, '0');
+            const seconds = String(jstTime.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // 初回実行
+        updateClock();
+        
+        // 1秒ごとに更新
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
