@@ -12,10 +12,8 @@
         }
 
         body {
-            /* ===== カスタマイズ可能な背景 ===== */
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            /* background: #000000; シンプル黒背景の場合はこちら */
-            /* background: #f5f5f5; ライト背景の場合はこちら */
+            /*背景*/
+            background: #f5f5f5;
             
             display: flex;
             justify-content: center;
@@ -34,20 +32,15 @@
         }
 
         .clock {
-            /* ===== カスタマイズ可能なフォント ===== */
+            /*フォント */
             font-size: 120px;
             font-weight: bold;
-            color: #00ff00;
-            /* color: #ffffff; 白色の場合 */
-            /* color: #ff6b6b; 赤色の場合 */
+            color: rgba(255, 255, 255, 0.1);
             
             font-family: 'Courier New', 'Courier', monospace;
             letter-spacing: 8px;
             text-align: center;
             
-            /* グロー効果（オプション） */
-            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
-            /* text-shadow: 0 0 10px #ffffff; 白色グロー */
         }
 
         .timezone-label {
