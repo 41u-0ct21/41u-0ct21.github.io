@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミニマルカレンダー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* パステルブルー背景 */
+            background: #b8d8e8;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'iA Writer Mono S', 'Courier New', monospace;
+        }
+
+        .calendar-container {
+            padding: 30px;
+            /* 濃いグレーの背景 */
+            background: #3a3a3a;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .calendar-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #4a4a4a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: #5a5a5a;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .weekday {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: #ffffff;
+            cursor: default;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .day.other-month {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .day.today::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            /* ===== カスタマイズ可能：朱色の円（塗りつぶし） ===== */
+            background: #ff4757; /* 朱色 */
+            /* background: #ff6b6b; 赤系 */
+            /* background: #ffa500; オレンジ */
+            z-index: -1;
+        }
+
+        .day.today {
+            font-weight: 600;
+            z-index: 1;
+            position: relative;
+        }
+
+        .day.saturday {
+            /* ===== カスタマイズ可能：土曜日の色 ===== */
+            color: #87ceeb; /* 薄い青 */
+            /* color: #b0e0e6; より濃い薄青 */
+        }
+
+        .day.sunday {
+            /* ===== カスタマイズ可能：日曜日の色 ===== */
+            color: #ffa6a6; /* 薄いピンク */
+            /* color: #ffb6c6; より濃いピンク */
+            /* color: #ff6b6b; 赤系 */
+        }
+
+        .today-indicator {
+            margin-top: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* レスポンシブデザイン */
+        @media (max-width: 480px) {
+            .calendar-container {
+                max-width: 100%;
+                padding: 20px;
+            }
+
+            .calendar-title {
+                font-size: 20px;
+            }
+
+            .day {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <div class="calendar-title" id="monthYear">2024年1月</div>
+            <div class="calendar-nav">
+                <button class="nav-btn" id="prevBtn">◀</button>
+                <button class="nav-btn" id="nextBtn">▶</button>
+            </div>
+        </div>
+
+        <div class="weekdays">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+        </div>
+
+        <div class="days" id="daysContainer"></div>
+
+        <div class="today-indicator" id="todayIndicator"></div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            // 月年の更新
+            const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', 
+                              '7月', '8月', '9月', '10月', '11月', '12月'];
+            document.getElementById('monthYear').textContent = `${year}年${monthNames[month]}`;
+
+            // 月の最初の日と最後の日を取得
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            const startingDayOfWeek = firstDay.getDay();
+
+            // 前月の日数
+            const prevLastDay = new Date(year, month, 0).getDate();
+
+            const daysContainer = document.getElementById('daysContainer');
+            daysContainer.innerHTML = '';
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+            // 前月の日付を表示
+            for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+                const day = document.createElement('div');
+                day.className = 'day other-month';
+                const dayOfWeek = (startingDayOfWeek - 1 - i) % 7;
+                if (dayOfWeek === 0) day.classList.add('sunday');
+                else if (dayOfWeek === 6) day.classList.add('saturday');
+                day.textContent = prevLastDay - i;
+                daysContainer.appendChild(day);
+            }
+
+            // 当月の日付を表示
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'day';
+
+                // 土日の判定
+                const dayOfWeek = (startingDayOfWeek + i - 1) % 7;
+                if (dayOfWeek === 0) {
+                    day.classList.add('sunday');
+                } else if (dayOfWeek === 6) {
+                    day.classList.add('saturday');
+                }
+
+                // 本日の判定
+                if (isCurrentMonth && i === today.getDate()) {
+                    day.classList.add('today');
+                }
+
+                day.textContent = i;
+                daysContainer.appendChild(day);
+            }
+
+            // 次月の日付を表示（5週間分まで = 35日）
+            const totalCells = daysContainer.children.length;
+            const remainingCells = 35 - totalCells;
+            for (let i = 1; i <= remainingCells; i++) {
+                const day = document.createElement('div');
+                day.className = 'day other-month';
+                const dayOfWeek = (daysInMonth + startingDayOfWeek + i - 1) % 7;
+                if (dayOfWeek === 0) day.classList.add('sunday');
+                else if (dayOfWeek === 6) day.classList.add('saturday');
+                day.textContent = i;
+                daysContainer.appendChild(day);
+            }
+
+            // 本日の情報を更新
+            updateTodayIndicator();
+        }
+
+        function updateTodayIndicator() {
+            const today = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = today.toLocaleDateString('ja-JP', options);
+            document.getElementById('todayIndicator').textContent = `Today: ${dateStr}`;
+        }
+
+        // イベントリスナー
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        // 初期表示
+        renderCalendar();
+    </script>
+</body>
+</html>
