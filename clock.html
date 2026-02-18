@@ -35,21 +35,14 @@
             /*フォント */
             font-size: 120px;
             font-weight: bold;
-            color: rgba(255, 255, 255, 0.1);
+            color: #f5f5f5;
             
-            font-family: 'Courier New', 'Courier', monospace;
+            font-family: 'iA Writer Mono S', 'iA Writer Mono S', monospace;
             letter-spacing: 8px;
             text-align: center;
             
         }
 
-        .timezone-label {
-            margin-top: 20px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
         @media (max-width: 768px) {
             .clock {
                 font-size: 80px;
@@ -76,7 +69,6 @@
 <body>
     <div class="clock-container">
         <div class="clock" id="clock">00:00:00</div>
-        <div class="timezone-label">JST (Japan Standard Time)</div>
     </div>
 
     <script>
